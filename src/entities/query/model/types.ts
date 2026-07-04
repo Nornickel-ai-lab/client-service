@@ -31,6 +31,7 @@ export interface QueryResponse {
   confidence: number;
   sources: SourceItem[];
   contradictions: ContradictionItem[];
+  ml_provider: string;
   performance: PerformanceMetrics;
 }
 

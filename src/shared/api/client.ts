@@ -7,6 +7,7 @@ const TOKEN_KEY = 'access_token';
 
 export const apiClient = axios.create({
   baseURL: env.apiBase,
+  timeout: 600_000,
   headers: {
     'Content-Type': 'application/json',
   },

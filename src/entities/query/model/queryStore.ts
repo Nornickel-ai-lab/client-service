@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
+import { useMlProviderStore } from '@/entities/ml/model/mlProviderStore';
 import { postQuery } from '@/entities/query/api/queryApi';
 import type { QueryMessage } from '@/entities/query/model/types';
 import { parseApiError } from '@/shared/api/errorHandler';
@@ -41,7 +42,8 @@ export const useQueryStore = defineStore('query', () => {
     inputStatus.value = 'process';
 
     try {
-      const response = await postQuery(trimmed);
+      const mlStore = useMlProviderStore();
+      const response = await postQuery(trimmed, mlStore.provider);
       const index = messages.value.findIndex((item) => {
         return item.id === assistantId;
       });
