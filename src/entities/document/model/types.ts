@@ -1,5 +1,3 @@
-export type DocumentVisibility = 'public' | 'internal' | 'confidential';
-
 export type DocumentStatus = 'pending' | 'processing' | 'done' | 'failed';
 
 export interface DocumentItem {
@@ -7,7 +5,6 @@ export interface DocumentItem {
   title: string;
   filename: string;
   status: DocumentStatus;
-  visibility: DocumentVisibility;
   error_message: string | null;
   created_at: string;
 }
@@ -19,5 +16,4 @@ export interface DocumentListResponse {
 export interface DocumentUploadResponse {
   id: string;
   status: string;
-  visibility: string;
 }

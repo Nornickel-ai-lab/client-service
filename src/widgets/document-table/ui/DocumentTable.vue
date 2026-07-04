@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { RouterLink } from 'vue-router';
 
@@ -10,8 +10,30 @@ import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { ui } from '@/shared/config/ui';
 
+const props = defineProps<{
+  searchQuery?: string;
+}>();
+
 const store = useDocumentStore();
 const { items, loaded, loading } = storeToRefs(store);
+
+const filteredItems = computed(() => {
+  const query = props.searchQuery?.trim().toLowerCase() ?? '';
+  if (!query) {
+    return items.value;
+  }
+  return items.value.filter((item) => {
+    return item.title.toLowerCase().includes(query)
+      || item.filename.toLowerCase().includes(query);
+  });
+});
+
+const emptyLabel = computed(() => {
+  if (items.value.length === 0) {
+    return ui.emptyDocuments;
+  }
+  return ui.documentsSearchEmpty;
+});
 
 onMounted(async () => {
   await store.loadDocuments();
@@ -44,16 +66,6 @@ const statusVariant = (status: DocumentItem['status']): 'default' | 'secondary' 
   return 'secondary';
 };
 
-const visibilityLabel = (visibility: DocumentItem['visibility']): string => {
-  if (visibility === 'public') {
-    return ui.visibilityPublic;
-  }
-  if (visibility === 'confidential') {
-    return ui.visibilityConfidential;
-  }
-  return ui.visibilityInternal;
-};
-
 const formatDate = (value: string): string => {
   return new Date(value).toLocaleString('ru-RU');
 };
@@ -61,9 +73,6 @@ const formatDate = (value: string): string => {
 
 <template>
   <section class="flex flex-col gap-3">
-    <h2 class="text-sm font-medium">
-      {{ ui.documentsTitle }}
-    </h2>
     <div
       v-if="!loaded && loading"
       class="flex flex-col gap-2"
@@ -72,10 +81,10 @@ const formatDate = (value: string): string => {
       <Skeleton class="h-10 w-full" />
     </div>
     <p
-      v-else-if="items.length === 0"
+      v-else-if="filteredItems.length === 0"
       class="text-sm text-muted-foreground"
     >
-      {{ ui.emptyDocuments }}
+      {{ emptyLabel }}
     </p>
     <div
       v-else
@@ -88,9 +97,6 @@ const formatDate = (value: string): string => {
               {{ ui.documentName }}
             </th>
             <th class="px-3 py-2 font-medium">
-              {{ ui.uploadVisibility }}
-            </th>
-            <th class="px-3 py-2 font-medium">
               {{ ui.documentStatus }}
             </th>
             <th class="px-3 py-2 font-medium">
@@ -101,7 +107,7 @@ const formatDate = (value: string): string => {
         </thead>
         <tbody>
           <tr
-            v-for="item in items"
+            v-for="item in filteredItems"
             :key="item.id"
             class="border-b border-border last:border-b-0"
           >
@@ -118,9 +124,6 @@ const formatDate = (value: string): string => {
               >
                 {{ item.error_message }}
               </p>
-            </td>
-            <td class="px-3 py-2">
-              {{ visibilityLabel(item.visibility) }}
             </td>
             <td class="px-3 py-2">
               <Badge :variant="statusVariant(item.status)">

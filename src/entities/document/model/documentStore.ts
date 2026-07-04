@@ -6,7 +6,7 @@ import {
   fetchDocuments,
   uploadDocument,
 } from '@/entities/document/api/documentApi';
-import type { DocumentItem, DocumentVisibility } from '@/entities/document/model/types';
+import type { DocumentItem } from '@/entities/document/model/types';
 import type { MlProviderId } from '@/entities/ml/model/types';
 import { parseApiError } from '@/shared/api/errorHandler';
 
@@ -43,15 +43,11 @@ export const useDocumentStore = defineStore('document', () => {
     }
   };
 
-  const upload = async (
-    file: File,
-    visibility: DocumentVisibility,
-    mlProvider: MlProviderId,
-  ): Promise<boolean> => {
+  const upload = async (file: File, mlProvider: MlProviderId): Promise<boolean> => {
     uploadStatus.value = 'process';
     uploadError.value = null;
     try {
-      await uploadDocument(file, visibility, mlProvider);
+      await uploadDocument(file, mlProvider);
       await loadDocuments();
       startPolling();
       return true;

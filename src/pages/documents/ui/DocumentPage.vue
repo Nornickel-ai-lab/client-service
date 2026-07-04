@@ -1,52 +1,59 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import MainLayout from '@/app/layouts/MainLayout.vue';
-import { fetchDocumentBlob } from '@/entities/document/api/documentApi';
+import { buildDocumentFileUrl } from '@/entities/document/api/documentApi';
 import { useDocumentStore } from '@/entities/document/model/documentStore';
 import type { DocumentItem } from '@/entities/document/model/types';
+import { ui } from '@/shared/config/ui';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { ui } from '@/shared/config/ui';
 
 const route = useRoute();
 const store = useDocumentStore();
 const document = ref<DocumentItem | null>(null);
-const fileUrl = ref<string | null>(null);
 const loadError = ref<string | null>(null);
+const loading = ref(false);
+
+const fileViewUrl = computed(() => {
+  if (!document.value) {
+    return null;
+  }
+  return buildDocumentFileUrl(document.value.id);
+});
 
 const load = async (): Promise<void> => {
   const documentId = String(route.params.id ?? '');
   if (!documentId) {
     return;
   }
+
+  loading.value = true;
   loadError.value = null;
-  document.value = await store.loadDocument(documentId);
-  if (!document.value) {
+  document.value = null;
+
+  const meta = await store.loadDocument(documentId);
+  if (!meta) {
     loadError.value = ui.documentNotFound;
+    loading.value = false;
     return;
   }
-  try {
-    const blob = await fetchDocumentBlob(documentId);
-    if (fileUrl.value) {
-      URL.revokeObjectURL(fileUrl.value);
-    }
-    fileUrl.value = URL.createObjectURL(blob);
-  } catch {
+  document.value = meta;
+
+  if (!fileViewUrl.value) {
     loadError.value = ui.documentLoadFailed;
   }
+  loading.value = false;
 };
 
-onMounted(() => {
-  load();
-});
-
-onUnmounted(() => {
-  if (fileUrl.value) {
-    URL.revokeObjectURL(fileUrl.value);
-  }
-});
+watch(
+  () => route.params.id,
+  () => {
+    load();
+  },
+  { immediate: true },
+);
 
 const isPdf = (): boolean => {
   return document.value?.filename.toLowerCase().endsWith('.pdf') ?? false;
@@ -57,18 +64,28 @@ const isPdf = (): boolean => {
   <MainLayout>
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto p-6">
       <div
-        v-if="!document && !loadError"
+        v-if="loading && !document"
         class="flex flex-col gap-2"
       >
         <Skeleton class="h-8 w-64" />
         <Skeleton class="h-96 w-full" />
       </div>
-      <p
+      <div
         v-else-if="loadError"
-        class="text-sm text-destructive"
+        class="flex flex-col gap-3"
       >
-        {{ loadError }}
-      </p>
+        <p class="text-sm text-destructive">
+          {{ loadError }}
+        </p>
+        <Button
+          variant="outline"
+          size="sm"
+          class="w-fit"
+          @click="load"
+        >
+          {{ ui.retry }}
+        </Button>
+      </div>
       <template v-else-if="document">
         <div class="mb-4 flex items-center justify-between gap-2">
           <div>
@@ -80,24 +97,26 @@ const isPdf = (): boolean => {
             </p>
           </div>
           <Button
-            v-if="fileUrl"
+            v-if="fileViewUrl"
             variant="outline"
             size="sm"
             as="a"
-            :href="fileUrl"
-            :download="document.filename"
+            :href="fileViewUrl"
+            target="_blank"
+            rel="noopener"
           >
             {{ ui.documentDownload }}
           </Button>
         </div>
         <iframe
-          v-if="fileUrl && isPdf()"
-          :src="fileUrl"
+          v-if="fileViewUrl && isPdf()"
+          :key="fileViewUrl"
+          :src="fileViewUrl"
           class="min-h-[75vh] w-full rounded-lg border border-border bg-background"
           :title="document.title"
         />
         <p
-          v-else-if="fileUrl"
+          v-else-if="fileViewUrl"
           class="text-sm text-muted-foreground"
         >
           {{ ui.documentPreviewUnavailable }}
