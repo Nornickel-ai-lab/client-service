@@ -17,4 +17,7 @@ export const ui = {
   statusFailed: 'Ошибка',
   retry: 'Повтор',
   fieldRequired: 'Обязательное поле',
+  mlProviderCloud: 'Облако',
+  mlProviderLocal: 'Ollama',
+  mlProviderToggle: 'Переключить облако или локальную модель',
 } as const;

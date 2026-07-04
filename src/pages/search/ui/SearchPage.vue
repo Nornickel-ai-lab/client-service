@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router';
 
 import SearchForm from '@/features/search/submit-query/ui/SearchForm.vue';
+import MlProviderToggle from '@/features/ml-provider/toggle/ui/MlProviderToggle.vue';
 import { useUserStore } from '@/entities/user/model/userStore';
 import SearchThread from '@/widgets/search-thread/ui/SearchThread.vue';
 import { Button } from '@/shared/ui/button';
@@ -22,14 +23,17 @@ const onLogout = async (): Promise<void> => {
       <h1 class="text-base font-semibold">
         {{ ui.navSearch }}
       </h1>
-      <Button
-        variant="ghost"
-        size="sm"
-        type="button"
-        @click="onLogout"
-      >
-        {{ ui.navLogout }}
-      </Button>
+      <div class="flex items-center gap-2">
+        <MlProviderToggle />
+        <Button
+          variant="ghost"
+          size="sm"
+          type="button"
+          @click="onLogout"
+        >
+          {{ ui.navLogout }}
+        </Button>
+      </div>
     </header>
     <SearchThread />
     <SearchForm />
