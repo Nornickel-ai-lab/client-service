@@ -16,13 +16,13 @@ const eslintParser = {
     parse: (code, options) => {
         return parser.parse(code, {
             ...options,
-            project: "./tsconfig.json",
+            project: "./tsconfig.app.json",
         });
     },
     parseForESLint: (code, options) => {
         return parser.parseForESLint(code, {
             ...options,
-            project: "./tsconfig.json",
+            project: "./tsconfig.app.json",
         });
     },
 };
@@ -32,6 +32,9 @@ import vueParser from "vue-eslint-parser";
 import * as espree from "espree";
 
 export default [
+    {
+        ignores: ["dist/**", "src/shared/ui/**", "src/vite-env.d.ts"],
+    },
     ...eslintPluginVue.configs["flat/recommended"],
 
     {
@@ -48,15 +51,15 @@ export default [
                     ts: eslintParser,
                     "<template>": espree,
                 },
-                project: "./tsconfig.json",
-                extraFileExtensions: ["vue"],
+                project: "./tsconfig.app.json",
+                extraFileExtensions: [".vue"],
             },
             globals: {
                 ...globals.browser,
             }
         },
         files: ["src/**/*.vue", "src/**/*.js", "src/**/*.ts", "./eslint.config.mjs"],
-        ignores: ["dist/**/*"],
+        ignores: ["dist/**/*", "src/shared/ui/**/*"],
         rules: {
             "array-callback-return": ["error", { checkForEach: false }],
             "constructor-super": "error",
@@ -258,7 +261,8 @@ export default [
                 {
                     ignorepackages: true,
                     vue: "always",
-                    js: "always"
+                    js: "always",
+                    css: "always",
                 },
             ],
 
@@ -280,6 +284,8 @@ export default [
                     }, []),
                 },
             ],
+            "require-atomic-updates": "off",
+            "vue/no-v-html": "off",
         },
     },
 ];
