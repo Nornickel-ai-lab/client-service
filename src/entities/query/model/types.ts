@@ -16,11 +16,21 @@ export interface SourceItem {
   document_url: string;
 }
 
+export interface ContradictionItem {
+  id: string;
+  topic: string;
+  doc_a_title: string;
+  doc_b_title: string;
+  summary: string;
+  confidence: number;
+}
+
 export interface QueryResponse {
   query_id: string;
   answer_md: string;
   confidence: number;
   sources: SourceItem[];
+  contradictions: ContradictionItem[];
   performance: PerformanceMetrics;
 }
 

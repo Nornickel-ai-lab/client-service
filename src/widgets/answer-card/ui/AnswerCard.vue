@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import MarkdownIt from 'markdown-it';
 
 import type { QueryMessage } from '@/entities/query/model/types';
+import ContradictionList from '@/widgets/contradiction-list/ui/ContradictionList.vue';
 import SourceList from '@/widgets/source-list/ui/SourceList.vue';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -96,6 +97,7 @@ const onRetry = (): void => {
       class="flex-col items-stretch border-t pt-4"
     >
       <SourceList :sources="message.response.sources" />
+      <ContradictionList :items="message.response.contradictions ?? []" />
     </CardFooter>
   </Card>
 </template>

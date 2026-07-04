@@ -9,6 +9,7 @@ export const ui = {
   searchSubmit: 'Найти',
   emptyResults: 'Нет результатов',
   resultsSources: 'Источники',
+  resultsContradictions: 'Расхождения',
   sourceOpen: 'Открыть',
   confidence: 'Достоверность',
   performanceTotal: 'Время мс',
