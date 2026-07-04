@@ -1,12 +1,11 @@
 # client-service
 
-Vue чат. POST `/api/v1/query`.
+Vue чат на shadcn-vue + Tailwind v4.
 
 ## Разворот
 
 ```bash
 cd ../server-service
-cp .env.example .env
 task up
 ```
 
@@ -19,17 +18,13 @@ npm install
 npm run dev
 ```
 
-http://localhost:5173  
-прокси `/api` → `8000`
+## Компоненты
+
+shadcn-vue в `src/shared/ui/`  
+строки UI в `src/shared/config/ui.ts`
 
 ## Сборка
 
 ```bash
 npm run build
-docker build -t client-service .
 ```
-
-## Состояния
-
-Ответ ассистента: idle, process, loaded, error  
-Поле ввода: idle, process
