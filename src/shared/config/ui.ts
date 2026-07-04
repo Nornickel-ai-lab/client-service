@@ -1,7 +1,10 @@
 export const ui = {
   navSearch: 'Поиск',
   navLogout: 'Выход',
-  loginTitle: 'Вход',
+  loginTitle: 'Вход в систему',
+  loginSubtitle: 'Введите email и пароль для доступа к карте знаний',
+  loginHeroTitle: 'Карта знаний R&D',
+  loginHeroSubtitle: 'Поиск и синтез по корпоративным исследованиям',
   loginEmail: 'Email',
   loginPassword: 'Пароль',
   loginSubmit: 'Войти',
@@ -20,4 +23,5 @@ export const ui = {
   mlProviderCloud: 'Облако',
   mlProviderLocal: 'Ollama',
   mlProviderToggle: 'Переключить облако или локальную модель',
+  authCallbackProcessing: 'Авторизация',
 } as const;

@@ -5,7 +5,6 @@ import { useForm } from 'vee-validate';
 import { loginSchema } from '@/features/auth/login/model/loginSchema';
 import { useLogin } from '@/features/auth/login/model/useLogin';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import {
   FormControl,
   FormField,
@@ -32,57 +31,68 @@ const onSubmit = handleSubmit(async (values) => {
 </script>
 
 <template>
-  <Card class="w-full max-w-md border-border">
-    <CardHeader>
-      <CardTitle>{{ ui.loginTitle }}</CardTitle>
-    </CardHeader>
-    <CardContent>
-      <form
-        class="flex flex-col gap-4"
-        @submit="onSubmit"
+  <div class="w-full">
+    <header class="mb-8">
+      <h2 class="text-2xl font-semibold tracking-tight text-white">
+        {{ ui.loginTitle }}
+      </h2>
+      <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {{ ui.loginSubtitle }}
+      </p>
+    </header>
+
+    <form
+      class="flex flex-col gap-5"
+      @submit="onSubmit"
+    >
+      <FormField
+        v-slot="{ componentField }"
+        name="email"
       >
-        <FormField
-          v-slot="{ componentField }"
-          name="email"
-        >
-          <FormItem>
-            <FormLabel>{{ ui.loginEmail }}</FormLabel>
-            <FormControl>
-              <Input
-                v-bind="componentField"
-                type="email"
-                autocomplete="username"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
+        <FormItem>
+          <FormLabel class="text-sm font-normal text-foreground">
+            {{ ui.loginEmail }}
+          </FormLabel>
+          <FormControl>
+            <Input
+              v-bind="componentField"
+              type="email"
+              autocomplete="username"
+              placeholder="researcher@local.dev"
+              class="h-11 border-white/10 bg-white/5 text-foreground placeholder:text-muted-foreground/60"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
 
-        <FormField
-          v-slot="{ componentField }"
-          name="password"
-        >
-          <FormItem>
-            <FormLabel>{{ ui.loginPassword }}</FormLabel>
-            <FormControl>
-              <Input
-                v-bind="componentField"
-                type="password"
-                autocomplete="current-password"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
+      <FormField
+        v-slot="{ componentField }"
+        name="password"
+      >
+        <FormItem>
+          <FormLabel class="text-sm font-normal text-foreground">
+            {{ ui.loginPassword }}
+          </FormLabel>
+          <FormControl>
+            <Input
+              v-bind="componentField"
+              type="password"
+              autocomplete="current-password"
+              class="h-11 border-white/10 bg-white/5 text-foreground"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
 
-        <Button
-          type="submit"
-          class="w-full"
-          :disabled="isSubmitting"
-        >
-          {{ ui.loginSubmit }}
-        </Button>
-      </form>
-    </CardContent>
-  </Card>
+      <Button
+        type="submit"
+        class="mt-2 h-11 w-full rounded-lg bg-white text-sm font-medium text-black hover:bg-white/90"
+        :disabled="isSubmitting"
+      >
+        {{ ui.loginSubmit }}
+      </Button>
+    </form>
+  </div>
 </template>
