@@ -20,8 +20,19 @@ export const useMlProviderStore = defineStore('mlProvider', () => {
     return found ?? null;
   });
 
+  const cloudOption = computed(() => {
+    const found = options.value.find((item) => {
+      return item.id === 'cloud';
+    });
+    return found ?? null;
+  });
+
   const ollamaAvailable = computed(() => {
     return ollamaOption.value?.available ?? false;
+  });
+
+  const cloudAvailable = computed(() => {
+    return cloudOption.value?.available ?? false;
   });
 
   const isLocal = computed(() => {
@@ -30,6 +41,9 @@ export const useMlProviderStore = defineStore('mlProvider', () => {
 
   const setProvider = (value: MlProviderId): void => {
     if (value === 'ollama' && !ollamaAvailable.value) {
+      return;
+    }
+    if (value === 'cloud' && !cloudAvailable.value) {
       return;
     }
     provider.value = value;
@@ -45,8 +59,11 @@ export const useMlProviderStore = defineStore('mlProvider', () => {
       const response = await fetchMlProviders();
       options.value = response.providers;
       loaded.value = true;
-      if (provider.value === 'ollama' && !ollamaAvailable.value) {
+      if (provider.value === 'ollama' && !ollamaAvailable.value && cloudAvailable.value) {
         setProvider('cloud');
+      }
+      if (provider.value === 'cloud' && !cloudAvailable.value && ollamaAvailable.value) {
+        setProvider('ollama');
       }
     } catch {
       loaded.value = true;
@@ -58,7 +75,9 @@ export const useMlProviderStore = defineStore('mlProvider', () => {
     options,
     loaded,
     ollamaOption,
+    cloudOption,
     ollamaAvailable,
+    cloudAvailable,
     isLocal,
     setProvider,
     toggleLocal,

@@ -8,14 +8,10 @@ import { Switch } from '@/shared/ui/switch';
 import { ui } from '@/shared/config/ui';
 
 const store = useMlProviderStore();
-const { isLocal, ollamaAvailable, loaded } = storeToRefs(store);
+const { isLocal, ollamaAvailable, cloudAvailable, loaded } = storeToRefs(store);
 
-const initProviders = async (): Promise<void> => {
+onMounted(async () => {
   await store.loadProviders();
-};
-
-onMounted(() => {
-  initProviders();
 });
 
 const onToggle = (value: boolean): void => {
@@ -26,7 +22,7 @@ const onToggle = (value: boolean): void => {
 <template>
   <div
     v-if="loaded"
-    class="flex items-center gap-2"
+    class="flex flex-col gap-2"
   >
     <Label
       for="ml-provider-toggle"
@@ -37,9 +33,7 @@ const onToggle = (value: boolean): void => {
     <Switch
       id="ml-provider-toggle"
       :model-value="isLocal"
-      :disabled="!ollamaAvailable"
-      size="sm"
-      :aria-label="ui.mlProviderToggle"
+      :disabled="!ollamaAvailable || !cloudAvailable"
       @update:model-value="onToggle"
     />
   </div>
