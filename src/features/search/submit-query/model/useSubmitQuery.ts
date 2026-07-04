@@ -2,10 +2,10 @@ import type { Ref } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useQueryStore } from '@/entities/query/model/queryStore';
-import type { ChatMessage } from '@/entities/query/model/types';
+import type { QueryMessage } from '@/entities/query/model/types';
 
 interface SubmitQueryResult {
-  messages: Ref<ChatMessage[]>;
+  messages: Ref<QueryMessage[]>;
   inputStatus: Ref<'idle' | 'process'>;
   submit: (text: string) => Promise<void>;
   retry: (assistantId: string) => Promise<void>;

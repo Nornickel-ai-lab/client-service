@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 import { postQuery } from '@/entities/query/api/queryApi';
-import type { ChatMessage } from '@/entities/query/model/types';
+import type { QueryMessage } from '@/entities/query/model/types';
 import { parseApiError } from '@/shared/api/errorHandler';
 
 const createId = (): string => {
@@ -10,7 +10,7 @@ const createId = (): string => {
 };
 
 export const useQueryStore = defineStore('query', () => {
-  const messages = ref<ChatMessage[]>([]);
+  const messages = ref<QueryMessage[]>([]);
   const inputStatus = ref<'idle' | 'process'>('idle');
 
   const sendMessage = async (text: string): Promise<void> => {

@@ -24,7 +24,7 @@ export interface QueryResponse {
   performance: PerformanceMetrics;
 }
 
-export interface ChatMessage {
+export interface QueryMessage {
   id: string;
   role: 'user' | 'assistant';
   text: string;

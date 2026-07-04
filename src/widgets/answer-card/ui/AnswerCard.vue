@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import MarkdownIt from 'markdown-it';
 
-import type { ChatMessage } from '@/entities/query/model/types';
+import type { QueryMessage } from '@/entities/query/model/types';
 import SourceList from '@/widgets/source-list/ui/SourceList.vue';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -11,7 +11,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { ui } from '@/shared/config/ui';
 
 const props = defineProps<{
-  message: ChatMessage;
+  message: QueryMessage;
 }>();
 
 const emit = defineEmits<{
@@ -48,7 +48,7 @@ const onRetry = (): void => {
   >
     <CardContent class="flex items-center gap-3 py-4">
       <Skeleton class="h-4 w-4 rounded-full" />
-      <span class="text-sm text-muted-foreground">{{ ui.statusProcess }}</span>
+      <span class="text-sm text-muted-foreground">{{ ui.statusProcessing }}</span>
     </CardContent>
   </Card>
 
