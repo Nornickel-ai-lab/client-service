@@ -1,6 +1,7 @@
 import type { AxiosError, AxiosInstance } from 'axios';
 
 import { ui } from '@/shared/config/ui';
+import { redirectToEsaLogin } from '@/shared/lib/authRedirect';
 
 interface ApiErrorBody {
   detail?: string;
@@ -32,8 +33,8 @@ export const registerApiErrorInterceptor = (instance: AxiosInstance): void => {
     (error: unknown) => {
       if (axiosIsError(error) && error.response?.status === 401) {
         localStorage.removeItem('access_token');
-        if (window.location.pathname !== '/login') {
-          window.location.assign('/login');
+        if (window.location.pathname !== '/auth/callback') {
+          redirectToEsaLogin();
         }
       }
       return Promise.reject(error);

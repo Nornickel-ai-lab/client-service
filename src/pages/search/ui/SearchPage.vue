@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-
 import SearchForm from '@/features/search/submit-query/ui/SearchForm.vue';
 import MlProviderToggle from '@/features/ml-provider/toggle/ui/MlProviderToggle.vue';
 import { useUserStore } from '@/entities/user/model/userStore';
 import SearchThread from '@/widgets/search-thread/ui/SearchThread.vue';
+import { redirectToEsaLogin } from '@/shared/lib/authRedirect';
 import { Button } from '@/shared/ui/button';
 import { ui } from '@/shared/config/ui';
 
 const store = useUserStore();
-const router = useRouter();
 
-const onLogout = async (): Promise<void> => {
+const onLogout = (): void => {
   store.logout();
-  await router.push('/login');
+  redirectToEsaLogin();
 };
 </script>
 
