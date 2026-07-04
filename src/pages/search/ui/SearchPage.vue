@@ -13,9 +13,7 @@ import { ui } from '@/shared/config/ui';
         <h1 class="text-lg font-semibold">
           {{ ui.searchTitle }}
         </h1>
-        <p class="text-sm text-muted-foreground">
-          {{ ui.searchHint }}
-        </p>
+      
       </header>
       <div class="border-b border-border bg-muted/20 px-6 py-4">
         <FilterPanel />

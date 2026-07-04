@@ -5,7 +5,7 @@ import type { QueryResponse } from '@/entities/query/model/types';
 
 export const postQuery = async (
   text: string,
-  mlProvider: MlProviderId = 'cloud',
+  mlProvider: MlProviderId = 'gigachat',
   filters?: QueryFiltersPayload,
 ): Promise<QueryResponse> => {
   const payload: Record<string, unknown> = {
