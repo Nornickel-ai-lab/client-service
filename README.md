@@ -1,33 +1,35 @@
 # client-service
 
-Фронт. Сейчас nginx-заглушка, дальше Vue + shadcn-vue.
+Vue чат. POST `/api/v1/query`.
 
 ## Разворот
 
-Отдельно не поднимается — через compose в server-service:
-
 ```bash
 cd ../server-service
+cp .env.example .env
 task up
 ```
 
 http://localhost:8080
 
-## Локальная разработка
-
-Когда появится Vite:
+## Локально
 
 ```bash
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
-Прокси `/api` → `http://localhost:8000` (см. vite.config).
+http://localhost:5173  
+прокси `/api` → `8000`
 
-## Сборка образа
+## Сборка
 
 ```bash
+npm run build
 docker build -t client-service .
 ```
 
-Порт 80 внутри контейнера, снаружи 8080.
+## Состояния
+
+Ответ ассистента: idle, process, loaded, error  
+Поле ввода: idle, process
