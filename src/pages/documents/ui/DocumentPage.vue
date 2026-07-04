@@ -2,10 +2,10 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
+import MainLayout from '@/app/layouts/MainLayout.vue';
 import { fetchDocumentBlob } from '@/entities/document/api/documentApi';
 import { useDocumentStore } from '@/entities/document/model/documentStore';
 import type { DocumentItem } from '@/entities/document/model/types';
-import AppHeader from '@/widgets/app-header/ui/AppHeader.vue';
 import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { ui } from '@/shared/config/ui';
@@ -54,9 +54,8 @@ const isPdf = (): boolean => {
 </script>
 
 <template>
-  <div class="mx-auto flex h-full max-w-5xl flex-col border-x border-border bg-muted/30">
-    <AppHeader />
-    <main class="flex flex-1 flex-col gap-4 overflow-y-auto p-4">
+  <MainLayout>
+    <div class="flex min-h-0 flex-1 flex-col overflow-y-auto p-6">
       <div
         v-if="!document && !loadError"
         class="flex flex-col gap-2"
@@ -71,9 +70,9 @@ const isPdf = (): boolean => {
         {{ loadError }}
       </p>
       <template v-else-if="document">
-        <div class="flex items-center justify-between gap-2">
+        <div class="mb-4 flex items-center justify-between gap-2">
           <div>
-            <h1 class="text-base font-semibold">
+            <h1 class="text-lg font-semibold">
               {{ document.title }}
             </h1>
             <p class="text-sm text-muted-foreground">
@@ -94,7 +93,7 @@ const isPdf = (): boolean => {
         <iframe
           v-if="fileUrl && isPdf()"
           :src="fileUrl"
-          class="min-h-[70vh] w-full rounded-md border border-border bg-background"
+          class="min-h-[75vh] w-full rounded-lg border border-border bg-background"
           :title="document.title"
         />
         <p
@@ -104,6 +103,6 @@ const isPdf = (): boolean => {
           {{ ui.documentPreviewUnavailable }}
         </p>
       </template>
-    </main>
-  </div>
+    </div>
+  </MainLayout>
 </template>
