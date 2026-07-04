@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { RouterLink } from 'vue-router';
+
 import type { SourceItem } from '@/entities/query/model/types';
 import { Badge } from '@/shared/ui/badge';
-import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Separator } from '@/shared/ui/separator';
 import { ui } from '@/shared/config/ui';
@@ -9,10 +10,6 @@ import { ui } from '@/shared/config/ui';
 defineProps<{
   sources: SourceItem[];
 }>();
-
-const openUrl = (source: SourceItem): string => {
-  return source.document_url;
-};
 </script>
 
 <template>
@@ -52,16 +49,12 @@ const openUrl = (source: SourceItem): string => {
             />
             <span v-if="source.year">{{ source.year }}</span>
           </div>
-          <Button
-            variant="link"
-            class="h-auto p-0"
-            as="a"
-            :href="openUrl(source)"
-            target="_blank"
-            rel="noopener noreferrer"
+          <RouterLink
+            :to="`/documents/${source.document_id}`"
+            class="text-sm text-primary underline-offset-4 hover:underline"
           >
             {{ ui.sourceOpen }}
-          </Button>
+          </RouterLink>
         </CardContent>
       </Card>
     </div>
