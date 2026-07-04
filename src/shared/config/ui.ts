@@ -1,5 +1,10 @@
 export const ui = {
   navSearch: 'Поиск',
+  navLogout: 'Выход',
+  loginTitle: 'Вход',
+  loginEmail: 'Email',
+  loginPassword: 'Пароль',
+  loginSubmit: 'Войти',
   searchPlaceholder: 'Запрос',
   searchSubmit: 'Найти',
   emptyResults: 'Нет результатов',
