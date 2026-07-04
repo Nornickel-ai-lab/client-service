@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useUserStore } from '@/entities/user/model/userStore';
 import AuthCallbackPage from '@/pages/auth-callback/ui/AuthCallbackPage.vue';
 import DocumentPage from '@/pages/documents/ui/DocumentPage.vue';
+import DocumentsListPage from '@/pages/documents/ui/DocumentsListPage.vue';
+import GraphPage from '@/pages/graph/ui/GraphPage.vue';
 import SearchPage from '@/pages/search/ui/SearchPage.vue';
 import UploadPage from '@/pages/upload/ui/UploadPage.vue';
 import { redirectToEsaLogin } from '@/shared/lib/authRedirect';
@@ -31,6 +33,14 @@ export const router = createRouter({
     {
       path: '/upload',
       component: UploadPage,
+    },
+    {
+      path: '/graph',
+      component: GraphPage,
+    },
+    {
+      path: '/documents',
+      component: DocumentsListPage,
     },
     {
       path: '/documents/:id',
