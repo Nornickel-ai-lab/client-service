@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import ChatPage from '@/pages/chat/ui/ChatPage.vue';
+import { RouterView } from 'vue-router';
+
+import ThemeProvider from '@/app/providers/ThemeProvider.vue';
 </script>
 
 <template>
-  <ChatPage />
+  <ThemeProvider>
+    <div class="h-full bg-background">
+      <RouterView />
+    </div>
+  </ThemeProvider>
 </template>

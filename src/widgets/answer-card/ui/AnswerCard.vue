@@ -38,7 +38,7 @@ const onRetry = (): void => {
     class="border-dashed bg-muted/40"
   >
     <CardContent class="py-4 text-sm text-muted-foreground">
-      {{ ui.chatIdle }}
+      {{ ui.emptyResults }}
     </CardContent>
   </Card>
 
@@ -58,7 +58,7 @@ const onRetry = (): void => {
   >
     <CardContent class="py-4">
       <p class="mb-3 text-sm text-destructive">
-        {{ message.error ?? ui.statusError }}
+        {{ message.error ?? ui.statusFailed }}
       </p>
       <Button
         variant="outline"

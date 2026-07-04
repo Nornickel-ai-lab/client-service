@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
-
-import { useChatStore } from '@/entities/query/model/chatStore';
-import AnswerBlock from '@/widgets/answer-block/ui/AnswerBlock.vue';
+import { useSubmitQuery } from '@/features/search/submit-query/model/useSubmitQuery';
+import AnswerCard from '@/widgets/answer-card/ui/AnswerCard.vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { ui } from '@/shared/config/ui';
 
-const chatStore = useChatStore();
-const { messages } = storeToRefs(chatStore);
+const { messages, retry } = useSubmitQuery();
 
 const onRetry = (id: string): void => {
-  chatStore.retryMessage(id);
+  retry(id);
 };
 </script>
 
@@ -21,7 +18,7 @@ const onRetry = (id: string): void => {
         v-if="messages.length === 0"
         class="m-auto text-sm text-muted-foreground"
       >
-        {{ ui.chatEmpty }}
+        {{ ui.emptyResults }}
       </p>
 
       <div
@@ -40,7 +37,7 @@ const onRetry = (id: string): void => {
           v-else
           class="w-full max-w-full"
         >
-          <AnswerBlock
+          <AnswerCard
             :message="message"
             @retry="onRetry"
           />

@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia';
 import { toTypedSchema } from '@vee-validate/yup';
 import { useForm } from 'vee-validate';
 
-import { chatSchema } from '@/features/chat/send-message/model/chatSchema';
-import { useChatStore } from '@/entities/query/model/chatStore';
+import { searchSchema } from '@/features/search/submit-query/model/searchSchema';
+import { useSubmitQuery } from '@/features/search/submit-query/model/useSubmitQuery';
 import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
 import { ui } from '@/shared/config/ui';
 
-const chatStore = useChatStore();
-const { inputStatus } = storeToRefs(chatStore);
+const { inputStatus, submit } = useSubmitQuery();
 
 const { handleSubmit, defineField, errors } = useForm({
-  validationSchema: toTypedSchema(chatSchema),
+  validationSchema: toTypedSchema(searchSchema),
   initialValues: {
     text: '',
   },
@@ -21,15 +19,15 @@ const { handleSubmit, defineField, errors } = useForm({
 
 const [text, textAttrs] = defineField('text');
 
-const submit = handleSubmit(async (values) => {
-  await chatStore.sendMessage(values.text);
+const onSubmit = handleSubmit(async (values) => {
+  await submit(values.text);
   text.value = '';
 });
 
 const onKeydown = (event: KeyboardEvent): void => {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
-    submit();
+    onSubmit();
   }
 };
 </script>
@@ -37,13 +35,13 @@ const onKeydown = (event: KeyboardEvent): void => {
 <template>
   <form
     class="flex gap-2 border-t border-border bg-background p-4"
-    @submit="submit"
+    @submit="onSubmit"
   >
     <div class="flex flex-1 flex-col gap-1">
       <Textarea
         v-model="text"
         v-bind="textAttrs"
-        :placeholder="ui.chatPlaceholder"
+        :placeholder="ui.searchPlaceholder"
         rows="2"
         class="min-h-[72px] resize-none"
         :disabled="inputStatus === 'process'"
@@ -61,7 +59,7 @@ const onKeydown = (event: KeyboardEvent): void => {
       class="self-end"
       :disabled="inputStatus === 'process'"
     >
-      {{ ui.chatSubmit }}
+      {{ ui.searchSubmit }}
     </Button>
   </form>
 </template>

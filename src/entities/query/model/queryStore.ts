@@ -5,9 +5,11 @@ import { postQuery } from '@/entities/query/api/queryApi';
 import type { ChatMessage } from '@/entities/query/model/types';
 import { parseApiError } from '@/shared/api/errorHandler';
 
-const createId = (): string => crypto.randomUUID();
+const createId = (): string => {
+  return crypto.randomUUID();
+};
 
-export const useChatStore = defineStore('chat', () => {
+export const useQueryStore = defineStore('query', () => {
   const messages = ref<ChatMessage[]>([]);
   const inputStatus = ref<'idle' | 'process'>('idle');
 
@@ -40,32 +42,36 @@ export const useChatStore = defineStore('chat', () => {
 
     try {
       const response = await postQuery(trimmed);
-      const index = messages.value.findIndex((item) => item.id === assistantId);
-      if (index === -1) {
-        return;
+      const index = messages.value.findIndex((item) => {
+        return item.id === assistantId;
+      });
+      if (index !== -1) {
+        messages.value[index] = {
+          ...messages.value[index],
+          status: 'loaded',
+          response,
+        };
       }
-      messages.value[index] = {
-        ...messages.value[index],
-        status: 'loaded',
-        response,
-      };
     } catch (error) {
-      const index = messages.value.findIndex((item) => item.id === assistantId);
-      if (index === -1) {
-        return;
+      const index = messages.value.findIndex((item) => {
+        return item.id === assistantId;
+      });
+      if (index !== -1) {
+        messages.value[index] = {
+          ...messages.value[index],
+          status: 'error',
+          error: parseApiError(error),
+        };
       }
-      messages.value[index] = {
-        ...messages.value[index],
-        status: 'error',
-        error: parseApiError(error),
-      };
-    } finally {
-      inputStatus.value = 'idle';
     }
+
+    inputStatus.value = 'idle';
   };
 
   const retryMessage = async (assistantId: string): Promise<void> => {
-    const assistantIndex = messages.value.findIndex((item) => item.id === assistantId);
+    const assistantIndex = messages.value.findIndex((item) => {
+      return item.id === assistantId;
+    });
     if (assistantIndex <= 0) {
       return;
     }

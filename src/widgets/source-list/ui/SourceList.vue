@@ -10,13 +10,15 @@ defineProps<{
   sources: SourceItem[];
 }>();
 
-const openUrl = (source: SourceItem): string => source.document_url;
+const openUrl = (source: SourceItem): string => {
+  return source.document_url;
+};
 </script>
 
 <template>
   <section v-if="sources.length > 0">
     <h3 class="mb-3 text-sm font-medium">
-      {{ ui.sourcesTitle }}
+      {{ ui.resultsSources }}
     </h3>
     <div class="flex flex-col gap-3">
       <Card
