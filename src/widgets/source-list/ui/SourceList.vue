@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { SourceItem } from '@/entities/query/model/types';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Separator } from '@/shared/ui/separator';
 import { ui } from '@/shared/config/ui';
 
 defineProps<{
@@ -10,114 +14,54 @@ const openUrl = (source: SourceItem): string => source.document_url;
 </script>
 
 <template>
-  <div
-    v-if="sources.length === 0"
-    class="sources sources_empty"
-  />
-
-  <section
-    v-else
-    class="sources sources_loaded"
-  >
-    <h3 class="sources__title">
+  <section v-if="sources.length > 0">
+    <h3 class="mb-3 text-sm font-medium">
       {{ ui.sourcesTitle }}
     </h3>
-    <ul class="sources__list">
-      <li
+    <div class="flex flex-col gap-3">
+      <Card
         v-for="source in sources"
         :key="source.document_id + source.chunk_text.slice(0, 20)"
-        class="sources__item"
+        class="border-border"
       >
-        <div class="sources__head">
-          <span class="sources__name">{{ source.title }}</span>
-          <span class="sources__score">{{ Math.round(source.confidence * 100) }}%</span>
-        </div>
-        <p class="sources__excerpt">
-          {{ source.chunk_text }}
-        </p>
-        <div class="sources__meta">
-          <span v-if="source.geo">{{ source.geo }}</span>
-          <span v-if="source.year">{{ source.year }}</span>
-        </div>
-        <a
-          class="sources__link"
-          :href="openUrl(source)"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {{ ui.sourceOpen }}
-        </a>
-      </li>
-    </ul>
+        <CardHeader class="pb-2">
+          <div class="flex items-start justify-between gap-2">
+            <CardTitle class="text-sm font-medium">
+              {{ source.title }}
+            </CardTitle>
+            <Badge variant="secondary">
+              {{ Math.round(source.confidence * 100) }}%
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent class="space-y-3 pt-0">
+          <p class="line-clamp-3 text-sm text-muted-foreground">
+            {{ source.chunk_text }}
+          </p>
+          <div
+            v-if="source.geo || source.year"
+            class="flex gap-2 text-xs text-muted-foreground"
+          >
+            <span v-if="source.geo">{{ source.geo }}</span>
+            <Separator
+              v-if="source.geo && source.year"
+              orientation="vertical"
+              class="h-4"
+            />
+            <span v-if="source.year">{{ source.year }}</span>
+          </div>
+          <Button
+            variant="link"
+            class="h-auto p-0"
+            as="a"
+            :href="openUrl(source)"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ ui.sourceOpen }}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   </section>
 </template>
-
-<style scoped>
-.sources {
-  margin-top: 12px;
-}
-
-.sources_empty {
-  display: none;
-}
-
-.sources__title {
-  margin: 0 0 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.sources__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.sources__item {
-  padding: 10px 0;
-  border-top: 1px solid #e5e7eb;
-}
-
-.sources__item:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-
-.sources__head {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.sources__name {
-  font-weight: 500;
-}
-
-.sources__score {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.sources__excerpt {
-  margin: 0 0 6px;
-  font-size: 13px;
-  color: #374151;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.sources__meta {
-  display: flex;
-  gap: 8px;
-  font-size: 12px;
-  color: #6b7280;
-  margin-bottom: 4px;
-}
-
-.sources__link {
-  font-size: 13px;
-}
-</style>

@@ -5,9 +5,9 @@ import { ui } from '@/shared/config/ui';
 </script>
 
 <template>
-  <div class="chat-panel">
-    <header class="chat-panel__header">
-      <h1 class="chat-panel__title">
+  <div class="flex h-full flex-col bg-muted/30">
+    <header class="border-b border-border bg-background px-4 py-3">
+      <h1 class="text-base font-semibold">
         {{ ui.chatTitle }}
       </h1>
     </header>
@@ -15,28 +15,3 @@ import { ui } from '@/shared/config/ui';
     <ChatInput />
   </div>
 </template>
-
-<style scoped>
-.chat-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  background: #fff;
-  border-left: 1px solid #e5e7eb;
-  border-right: 1px solid #e5e7eb;
-}
-
-.chat-panel__header {
-  padding: 14px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #fff;
-}
-
-.chat-panel__title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-}
-</style>

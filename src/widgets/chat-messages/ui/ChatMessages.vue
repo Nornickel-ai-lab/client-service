@@ -3,6 +3,7 @@ import { storeToRefs } from 'pinia';
 
 import { useChatStore } from '@/entities/query/model/chatStore';
 import AnswerBlock from '@/widgets/answer-block/ui/AnswerBlock.vue';
+import { ScrollArea } from '@/shared/ui/scroll-area';
 import { ui } from '@/shared/config/ui';
 
 const chatStore = useChatStore();
@@ -14,73 +15,37 @@ const onRetry = (id: string): void => {
 </script>
 
 <template>
-  <div class="chat-messages">
-    <div
-      v-if="messages.length === 0"
-      class="chat-messages__empty"
-    >
-      {{ ui.chatEmpty }}
-    </div>
-
-    <div
-      v-for="message in messages"
-      :key="message.id"
-      class="chat-messages__row"
-      :class="`chat-messages__row_${message.role}`"
-    >
-      <div
-        v-if="message.role === 'user'"
-        class="chat-messages__user"
+  <ScrollArea class="flex-1 px-4">
+    <div class="flex min-h-full flex-col gap-3 py-4">
+      <p
+        v-if="messages.length === 0"
+        class="m-auto text-sm text-muted-foreground"
       >
-        {{ message.text }}
+        {{ ui.chatEmpty }}
+      </p>
+
+      <div
+        v-for="message in messages"
+        :key="message.id"
+        class="flex w-full"
+        :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
+      >
+        <div
+          v-if="message.role === 'user'"
+          class="max-w-[80%] rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-pre-wrap"
+        >
+          {{ message.text }}
+        </div>
+        <div
+          v-else
+          class="w-full max-w-full"
+        >
+          <AnswerBlock
+            :message="message"
+            @retry="onRetry"
+          />
+        </div>
       </div>
-      <AnswerBlock
-        v-else
-        :message="message"
-        @retry="onRetry"
-      />
     </div>
-  </div>
+  </ScrollArea>
 </template>
-
-<style scoped>
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.chat-messages__empty {
-  margin: auto;
-  color: #6b7280;
-}
-
-.chat-messages__row {
-  display: flex;
-  max-width: 100%;
-}
-
-.chat-messages__row_user {
-  justify-content: flex-end;
-}
-
-.chat-messages__row_assistant {
-  justify-content: flex-start;
-}
-
-.chat-messages__user {
-  max-width: 80%;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background: #2563eb;
-  color: #fff;
-  white-space: pre-wrap;
-}
-
-.chat-messages__row_assistant {
-  width: 100%;
-}
-</style>

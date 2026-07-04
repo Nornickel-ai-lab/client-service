@@ -1,20 +1,30 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { toTypedSchema } from '@vee-validate/yup';
+import { useForm } from 'vee-validate';
 
+import { chatSchema } from '@/features/chat/send-message/model/chatSchema';
 import { useChatStore } from '@/entities/query/model/chatStore';
+import { Button } from '@/shared/ui/button';
+import { Textarea } from '@/shared/ui/textarea';
 import { ui } from '@/shared/config/ui';
 
 const chatStore = useChatStore();
 const { inputStatus } = storeToRefs(chatStore);
 
-const text = ref('');
+const { handleSubmit, defineField, errors } = useForm({
+  validationSchema: toTypedSchema(chatSchema),
+  initialValues: {
+    text: '',
+  },
+});
 
-const submit = async (): Promise<void> => {
-  const value = text.value;
+const [text, textAttrs] = defineField('text');
+
+const submit = handleSubmit(async (values) => {
+  await chatStore.sendMessage(values.text);
   text.value = '';
-  await chatStore.sendMessage(value);
-};
+});
 
 const onKeydown = (event: KeyboardEvent): void => {
   if (event.key === 'Enter' && !event.shiftKey) {
@@ -26,56 +36,32 @@ const onKeydown = (event: KeyboardEvent): void => {
 
 <template>
   <form
-    class="chat-input"
-    @submit.prevent="submit"
+    class="flex gap-2 border-t border-border bg-background p-4"
+    @submit="submit"
   >
-    <textarea
-      v-model="text"
-      class="chat-input__field"
-      :placeholder="ui.chatPlaceholder"
-      rows="2"
-      :disabled="inputStatus === 'process'"
-      @keydown="onKeydown"
-    />
-    <button
-      class="chat-input__submit"
+    <div class="flex flex-1 flex-col gap-1">
+      <Textarea
+        v-model="text"
+        v-bind="textAttrs"
+        :placeholder="ui.chatPlaceholder"
+        rows="2"
+        class="min-h-[72px] resize-none"
+        :disabled="inputStatus === 'process'"
+        @keydown="onKeydown"
+      />
+      <p
+        v-if="errors.text"
+        class="text-sm text-destructive"
+      >
+        {{ errors.text }}
+      </p>
+    </div>
+    <Button
       type="submit"
-      :disabled="inputStatus === 'process' || text.trim().length === 0"
+      class="self-end"
+      :disabled="inputStatus === 'process'"
     >
       {{ ui.chatSubmit }}
-    </button>
+    </Button>
   </form>
 </template>
-
-<style scoped>
-.chat-input {
-  display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  border-top: 1px solid #e5e7eb;
-  background: #fff;
-}
-
-.chat-input__field {
-  flex: 1;
-  resize: none;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background: #fff;
-}
-
-.chat-input__field:focus {
-  outline: 2px solid #93c5fd;
-  border-color: #3b82f6;
-}
-
-.chat-input__submit {
-  align-self: flex-end;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  background: #2563eb;
-  color: #fff;
-}
-</style>

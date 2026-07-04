@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { marked } from 'marked';
+import MarkdownIt from 'markdown-it';
 
 import type { ChatMessage } from '@/entities/query/model/types';
 import SourceList from '@/widgets/source-list/ui/SourceList.vue';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
+import { Skeleton } from '@/shared/ui/skeleton';
 import { ui } from '@/shared/config/ui';
 
 const props = defineProps<{
@@ -14,11 +18,13 @@ const emit = defineEmits<{
   retry: [id: string];
 }>();
 
+const md = new MarkdownIt();
+
 const html = computed(() => {
   if (!props.message.response?.answer_md) {
     return '';
   }
-  return marked.parse(props.message.response.answer_md, { async: false }) as string;
+  return md.render(props.message.response.answer_md);
 });
 
 const onRetry = (): void => {
@@ -27,128 +33,69 @@ const onRetry = (): void => {
 </script>
 
 <template>
-  <div
+  <Card
     v-if="message.status === 'idle'"
-    class="answer answer_idle"
+    class="border-dashed bg-muted/40"
   >
-    {{ ui.chatIdle }}
-  </div>
+    <CardContent class="py-4 text-sm text-muted-foreground">
+      {{ ui.chatIdle }}
+    </CardContent>
+  </Card>
 
-  <div
+  <Card
     v-else-if="message.status === 'process'"
-    class="answer answer_process"
+    class="border-border"
   >
-    <span class="answer__spinner" />
-    {{ ui.statusProcess }}
-  </div>
+    <CardContent class="flex items-center gap-3 py-4">
+      <Skeleton class="h-4 w-4 rounded-full" />
+      <span class="text-sm text-muted-foreground">{{ ui.statusProcess }}</span>
+    </CardContent>
+  </Card>
 
-  <div
+  <Card
     v-else-if="message.status === 'error'"
-    class="answer answer_error"
+    class="border-destructive/40 bg-destructive/5"
   >
-    <p class="answer__error-text">
-      {{ message.error ?? ui.statusError }}
-    </p>
-    <button
-      type="button"
-      class="answer__retry"
-      @click="onRetry"
-    >
-      {{ ui.retry }}
-    </button>
-  </div>
+    <CardContent class="py-4">
+      <p class="mb-3 text-sm text-destructive">
+        {{ message.error ?? ui.statusError }}
+      </p>
+      <Button
+        variant="outline"
+        size="sm"
+        type="button"
+        @click="onRetry"
+      >
+        {{ ui.retry }}
+      </Button>
+    </CardContent>
+  </Card>
 
-  <div
+  <Card
     v-else
-    class="answer answer_loaded"
+    class="border-border"
   >
-    <div
-      class="answer__body"
-      v-html="html"
-    />
-    <p
+    <CardHeader class="pb-2">
+      <div
+        v-if="message.response"
+        class="flex flex-wrap gap-2"
+      >
+        <Badge variant="secondary">
+          {{ ui.confidence }} {{ Math.round(message.response.confidence * 100) }}%
+        </Badge>
+        <Badge variant="outline">
+          {{ ui.performanceTotal }} {{ message.response.performance.total_time_ms }}
+        </Badge>
+      </div>
+    </CardHeader>
+    <CardContent class="prose prose-sm max-w-none dark:prose-invert">
+      <div v-html="html" />
+    </CardContent>
+    <CardFooter
       v-if="message.response"
-      class="answer__meta"
+      class="flex-col items-stretch border-t pt-4"
     >
-      <span>{{ ui.confidence }}: {{ Math.round(message.response.confidence * 100) }}%</span>
-      <span>{{ ui.performanceTotal }}: {{ message.response.performance.total_time_ms }}</span>
-    </p>
-    <SourceList
-      v-if="message.response"
-      :sources="message.response.sources"
-    />
-  </div>
+      <SourceList :sources="message.response.sources" />
+    </CardFooter>
+  </Card>
 </template>
-
-<style scoped>
-.answer {
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-}
-
-.answer_idle {
-  color: #6b7280;
-  background: #f9fafb;
-}
-
-.answer_process {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #6b7280;
-}
-
-.answer__spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #d1d5db;
-  border-top-color: #2563eb;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.answer_error {
-  border-color: #fecaca;
-  background: #fef2f2;
-}
-
-.answer__error-text {
-  margin: 0 0 8px;
-  color: #b91c1c;
-}
-
-.answer__retry {
-  padding: 6px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: #fff;
-}
-
-.answer_loaded {
-  background: #fff;
-}
-
-.answer__body :deep(p) {
-  margin: 0 0 8px;
-}
-
-.answer__body :deep(p:last-child) {
-  margin-bottom: 0;
-}
-
-.answer__meta {
-  margin: 12px 0 0;
-  font-size: 12px;
-  color: #6b7280;
-  display: flex;
-  gap: 12px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>
