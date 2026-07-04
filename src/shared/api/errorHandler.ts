@@ -30,6 +30,12 @@ export const registerApiErrorInterceptor = (instance: AxiosInstance): void => {
       return response;
     },
     (error: unknown) => {
+      if (axiosIsError(error) && error.response?.status === 401) {
+        localStorage.removeItem('access_token');
+        if (window.location.pathname !== '/login') {
+          window.location.assign('/login');
+        }
+      }
       return Promise.reject(error);
     },
   );
