@@ -30,7 +30,7 @@ const props = defineProps<{
     >
       <Card
         v-for="source in sources"
-        :key="source.document_id + source.chunk_text.slice(0, 24)"
+        :key="source.document_id"
         class="border-border"
       >
         <CardHeader class="pb-2">

@@ -18,9 +18,7 @@ const onRetry = (id: string): void => {
         v-if="messages.length === 0"
         class="rounded-lg border border-dashed border-border bg-background px-6 py-12 text-center"
       >
-        <p class="text-sm text-muted-foreground">
-          {{ ui.searchHint }}
-        </p>
+       
       </div>
 
       <template

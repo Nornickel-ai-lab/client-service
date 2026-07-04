@@ -98,6 +98,7 @@ const onRetry = (): void => {
     </CardContent>
     <CardFooter class="flex-col items-stretch gap-4 border-t pt-4">
       <SourceList
+        v-if="message.response.sources.length > 0"
         :sources="message.response.sources"
         :confidence="message.response.confidence"
       />
