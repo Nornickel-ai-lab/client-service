@@ -28,6 +28,13 @@ const html = computed(() => {
   return md.render(props.message.response.answer_md);
 });
 
+const providerLabel = computed(() => {
+  if (props.message.response?.ml_provider === 'ollama') {
+    return ui.mlProviderLocal;
+  }
+  return ui.mlProviderCloud;
+});
+
 const onRetry = (): void => {
   emit('retry', props.message.id);
 };
@@ -35,19 +42,10 @@ const onRetry = (): void => {
 
 <template>
   <Card
-    v-if="message.status === 'idle'"
-    class="border-dashed bg-muted/40"
-  >
-    <CardContent class="py-4 text-sm text-muted-foreground">
-      {{ ui.emptyResults }}
-    </CardContent>
-  </Card>
-
-  <Card
-    v-else-if="message.status === 'process'"
+    v-if="message.status === 'process'"
     class="border-border"
   >
-    <CardContent class="flex items-center gap-3 py-4">
+    <CardContent class="flex items-center gap-3 py-6">
       <Skeleton class="h-4 w-4 rounded-full" />
       <span class="text-sm text-muted-foreground">{{ ui.statusProcessing }}</span>
     </CardContent>
@@ -73,30 +71,36 @@ const onRetry = (): void => {
   </Card>
 
   <Card
-    v-else
-    class="border-border"
+    v-else-if="message.response"
+    class="border-border shadow-sm"
   >
     <CardHeader class="pb-2">
-      <div
-        v-if="message.response"
-        class="flex flex-wrap gap-2"
-      >
+      <div class="flex flex-wrap gap-2">
         <Badge variant="secondary">
           {{ ui.confidence }} {{ Math.round(message.response.confidence * 100) }}%
         </Badge>
         <Badge variant="outline">
+          {{ ui.providerLabel }} {{ providerLabel }}
+        </Badge>
+        <Badge variant="outline">
           {{ ui.performanceTotal }} {{ message.response.performance.total_time_ms }}
+        </Badge>
+        <Badge variant="outline">
+          {{ ui.performanceSearch }} {{ message.response.performance.search_time_ms }}
+        </Badge>
+        <Badge variant="outline">
+          {{ ui.performanceLlm }} {{ message.response.performance.llm_time_ms }}
         </Badge>
       </div>
     </CardHeader>
     <CardContent class="prose prose-sm max-w-none dark:prose-invert">
       <div v-html="html" />
     </CardContent>
-    <CardFooter
-      v-if="message.response"
-      class="flex-col items-stretch border-t pt-4"
-    >
-      <SourceList :sources="message.response.sources" />
+    <CardFooter class="flex-col items-stretch gap-4 border-t pt-4">
+      <SourceList
+        :sources="message.response.sources"
+        :confidence="message.response.confidence"
+      />
       <ContradictionList :items="message.response.contradictions ?? []" />
     </CardFooter>
   </Card>

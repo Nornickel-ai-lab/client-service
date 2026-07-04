@@ -12,37 +12,35 @@ const onRetry = (id: string): void => {
 </script>
 
 <template>
-  <ScrollArea class="flex-1 px-4">
-    <div class="flex min-h-full flex-col gap-3 py-4">
-      <p
-        v-if="messages.length === 0"
-        class="m-auto text-sm text-muted-foreground"
-      >
-        {{ ui.emptyResults }}
-      </p>
-
+  <ScrollArea class="min-h-0 flex-1 px-6">
+    <div class="mx-auto flex w-full max-w-4xl flex-col gap-4 py-6">
       <div
+        v-if="messages.length === 0"
+        class="rounded-lg border border-dashed border-border bg-background px-6 py-12 text-center"
+      >
+        <p class="text-sm text-muted-foreground">
+          {{ ui.searchHint }}
+        </p>
+      </div>
+
+      <template
         v-for="message in messages"
         :key="message.id"
-        class="flex w-full"
-        :class="message.role === 'user' ? 'justify-end' : 'justify-start'"
       >
         <div
           v-if="message.role === 'user'"
-          class="max-w-[80%] rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground whitespace-pre-wrap"
+          class="flex justify-end"
         >
-          {{ message.text }}
+          <div class="max-w-[85%] rounded-2xl bg-primary px-4 py-3 text-sm text-primary-foreground whitespace-pre-wrap">
+            {{ message.text }}
+          </div>
         </div>
-        <div
+        <AnswerCard
           v-else
-          class="w-full max-w-full"
-        >
-          <AnswerCard
-            :message="message"
-            @retry="onRetry"
-          />
-        </div>
-      </div>
+          :message="message"
+          @retry="onRetry"
+        />
+      </template>
     </div>
   </ScrollArea>
 </template>

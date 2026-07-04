@@ -38,7 +38,7 @@ const onKeydown = (event: KeyboardEvent): void => {
 
 <template>
   <form
-    class="flex gap-2 border-t border-border bg-background p-4"
+    class="sticky bottom-0 flex gap-2 border-t border-border bg-background/95 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     @submit="onSubmit"
   >
     <FormField
