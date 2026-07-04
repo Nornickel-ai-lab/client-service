@@ -1,18 +1,21 @@
-export type MlProviderId = 'cloud' | 'ollama';
+export type MlProviderId = 'gigachat' | 'ollama';
 
 export interface MlProviderOption {
   id: MlProviderId;
   label: string;
   available: boolean;
-  yandex_configured?: boolean;
-  mock_fallback?: boolean;
+  gigachat_configured?: boolean;
   llm_model?: string;
   embed_model?: string;
-  embed_doc_model?: string;
-  embed_query_model?: string;
 }
 
 export interface MlProvidersResponse {
   default: MlProviderId;
   providers: MlProviderOption[];
+}
+
+export interface MlBulkJobResponse {
+  status: string;
+  job: string;
+  provider: MlProviderId;
 }
