@@ -1,44 +1,16 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup';
-import { useForm } from 'vee-validate';
-import { computed, ref } from 'vue';
-import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
 import { Upload } from 'lucide-vue-next';
 
-import { useUserStore } from '@/entities/user/model/userStore';
-import {
-  uploadSchema,
-  type UploadFormValues,
-} from '@/features/upload/document/model/uploadSchema';
 import { useUploadDocument } from '@/features/upload/document/model/useUploadDocument';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/ui/form';
 import { ui } from '@/shared/config/ui';
 
 const { uploadStatus, uploadError, fileError, setFile, submit } = useUploadDocument();
-const userStore = useUserStore();
-const { user } = storeToRefs(userStore);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const selectedName = ref('');
 const uploadSuccess = ref(false);
-
-const isAdmin = computed(() => {
-  return user.value?.role === 'admin';
-});
-
-const { handleSubmit } = useForm<UploadFormValues>({
-  validationSchema: toTypedSchema(uploadSchema),
-  initialValues: {
-    visibility: 'internal',
-  },
-});
 
 const onPickFile = (): void => {
   fileInputRef.value?.click();
@@ -64,8 +36,9 @@ const onDragOver = (event: DragEvent): void => {
   event.preventDefault();
 };
 
-const onSubmit = handleSubmit(async (values) => {
-  const ok = await submit(values);
+const onSubmit = async (event: Event): Promise<void> => {
+  event.preventDefault();
+  const ok = await submit();
   if (!ok) {
     return;
   }
@@ -75,7 +48,7 @@ const onSubmit = handleSubmit(async (values) => {
   if (fileInputRef.value) {
     fileInputRef.value.value = '';
   }
-});
+};
 </script>
 
 <template>
@@ -116,35 +89,6 @@ const onSubmit = handleSubmit(async (values) => {
         >
           {{ fileError }}
         </p>
-        <FormField
-          v-slot="{ componentField }"
-          name="visibility"
-        >
-          <FormItem>
-            <FormLabel>{{ ui.uploadVisibility }}</FormLabel>
-            <FormControl>
-              <select
-                v-bind="componentField"
-                class="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
-                :disabled="uploadStatus === 'process'"
-              >
-                <option value="public">
-                  {{ ui.visibilityPublic }}
-                </option>
-                <option value="internal">
-                  {{ ui.visibilityInternal }}
-                </option>
-                <option
-                  v-if="isAdmin"
-                  value="confidential"
-                >
-                  {{ ui.visibilityConfidential }}
-                </option>
-              </select>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
         <p
           v-if="uploadSuccess"
           class="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm"

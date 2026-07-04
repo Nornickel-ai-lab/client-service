@@ -1,11 +1,8 @@
-import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
 
 import { useDocumentStore } from '@/entities/document/model/documentStore';
-import type { DocumentVisibility } from '@/entities/document/model/types';
 import { useMlProviderStore } from '@/entities/ml/model/mlProviderStore';
-import type { UploadFormValues } from '@/features/upload/document/model/uploadSchema';
-
 import { ui } from '@/shared/config/ui';
 
 const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.pptx', '.zip'];
@@ -43,15 +40,11 @@ export const useUploadDocument = () => {
     }
   };
 
-  const submit = async (values: UploadFormValues): Promise<boolean> => {
+  const submit = async (): Promise<boolean> => {
     if (!validateFile(selectedFile.value)) {
       return false;
     }
-    return documentStore.upload(
-      selectedFile.value as File,
-      values.visibility as DocumentVisibility,
-      mlStore.provider,
-    );
+    return documentStore.upload(selectedFile.value as File, mlStore.provider);
   };
 
   return {
