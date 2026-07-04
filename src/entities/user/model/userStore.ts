@@ -27,6 +27,11 @@ export const useUserStore = defineStore('user', () => {
     user.value = await fetchMe();
   };
 
+  const acceptToken = async (accessToken: string): Promise<void> => {
+    setToken(accessToken);
+    user.value = await fetchMe();
+  };
+
   const loadProfile = async (): Promise<void> => {
     if (!token.value) {
       return;
@@ -46,6 +51,7 @@ export const useUserStore = defineStore('user', () => {
     token,
     user,
     login,
+    acceptToken,
     loadProfile,
     logout,
     clearSession,
