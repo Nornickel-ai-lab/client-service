@@ -1,12 +1,13 @@
 # client-service
 
+Запуск через утилиту таск в контейнере
 ```bash
-cd ../server-service
 task up
 ```
 
 http://localhost:8080
 
+Запуск без контейнера
 ```bash
 npm install
 npm run dev
