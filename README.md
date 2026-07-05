@@ -1,6 +1,6 @@
 # client-service
-
-UI (Vue 3). Развёртывание — через **server-service**:
+! РЕКОМЕНДУЕТСЯ ЗАПУСКАТЬ МЕТОДОМ ЧЕРЕЗ ОСНОВНУЮ ИНСТРУКЦИЮ
+UI (Vue 3). Развёртывание через **server-service**:
 
 ```bash
 cd ../server-service
