@@ -1,18 +1,19 @@
 # client-service
 
-! Основной разворот с запуском всех контейнеров находится в репе server-service
+UI (Vue 3). Развёртывание — через **server-service**:
 
-Запуск через утилиту таск в контейнере 
 ```bash
-task up
+cd ../server-service
+cp .env.example .env
+chmod +x deploy.sh && ./deploy.sh
 ```
 
-http://localhost:8080
+http://localhost:8080 · вход http://localhost:8081/login
 
-Запуск без контейнера
+Локальная разработка без Docker:
+
 ```bash
-npm install
-npm run dev
+npm install && npm run dev
 ```
 
 http://localhost:5173
