@@ -8,7 +8,7 @@ import { Label } from '@/shared/ui/label';
 import { Switch } from '@/shared/ui/switch';
 
 const store = useMlProviderStore();
-const { loaded } = storeToRefs(store);
+const { loaded, gigachatOption } = storeToRefs(store);
 
 onMounted(async () => {
   await store.loadProviders();
@@ -25,7 +25,7 @@ onMounted(async () => {
       for="ml-provider-toggle"
       class="text-xs text-muted-foreground"
     >
-      {{ ui.mlProviderGigachat }}
+      {{ gigachatOption?.label ?? ui.mlProviderCloud }}
     </Label>
     <Switch
       id="ml-provider-toggle"
