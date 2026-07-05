@@ -92,7 +92,6 @@ export const ui = {
   graphContradictionsTitle: 'Расхождения',
   graphContradictionsEmpty: 'Расхождений нет',
   graphContradictionFocus: 'Показать на графе',
-  answerGroups: 'Группы источников',
   answerGaps: 'Пробелы в знаниях',
   answerRecommendations: 'Рекомендации',
   answerExperts: 'Эксперты',

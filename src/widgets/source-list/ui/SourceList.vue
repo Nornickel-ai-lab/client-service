@@ -54,9 +54,6 @@ const documentLink = (source: SourceItem): string | { path: string; query?: { pa
                 {{ source.title }}
               </RouterLink>
             </CardTitle>
-            <Badge variant="secondary">
-              {{ Math.round(source.confidence * 100) }}%
-            </Badge>
           </div>
           <div
             v-if="source.page_label"

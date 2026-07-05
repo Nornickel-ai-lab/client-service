@@ -63,10 +63,12 @@ export const registerApiErrorInterceptor = (instance: AxiosInstance): void => {
     },
     (error: unknown) => {
       if (axiosIsError(error) && error.response?.status === 401) {
-        localStorage.removeItem('access_token');
-        if (window.location.pathname !== '/auth/callback') {
-          redirectToEsaLogin();
+        const path = window.location.pathname;
+        if (path === '/auth/callback' || path === '/login') {
+          return Promise.reject(error);
         }
+        localStorage.removeItem('access_token');
+        redirectToEsaLogin();
       }
       return Promise.reject(error);
     },

@@ -112,59 +112,6 @@ const onExport = (): void => {
     </CardContent>
     <CardFooter class="flex-col items-stretch gap-4 border-t pt-4">
       <section
-        v-if="message.response.groups.length > 0"
-        class="space-y-3"
-      >
-        <h3 class="text-sm font-medium">
-          {{ ui.answerGroups }}
-        </h3>
-        <div class="grid gap-3 lg:grid-cols-2">
-          <Card
-            v-for="group in message.response.groups"
-            :key="group.title"
-            class="border-border"
-          >
-            <CardHeader class="pb-2">
-              <p class="text-sm font-medium">
-                {{ group.title }}
-              </p>
-              <p class="text-xs text-muted-foreground">
-                {{ group.summary }}
-              </p>
-            </CardHeader>
-            <CardContent class="space-y-3 pt-0">
-              <div
-                v-for="entry in (group.entries?.length ? group.entries : group.source_titles.map((title) => ({ title, document_id: null, excerpt: '', page_label: null })))"
-                :key="entry.title"
-                class="rounded-md border border-border/60 bg-muted/20 p-3"
-              >
-                <p class="text-sm font-medium">
-                  {{ entry.title }}
-                </p>
-                <div
-                  v-if="entry.page_label"
-                  class="mt-1 flex items-center gap-2"
-                >
-                  <span class="text-xs text-muted-foreground">
-                    {{ ui.sourceLookAt }}
-                  </span>
-                  <Badge variant="outline">
-                    {{ entry.page_label }}
-                  </Badge>
-                </div>
-                <blockquote
-                  v-if="entry.excerpt"
-                  class="mt-2 border-l-2 border-primary/30 pl-3 text-sm leading-relaxed text-muted-foreground"
-                >
-                  {{ entry.excerpt }}
-                </blockquote>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <section
         v-if="message.response.gaps.length > 0"
         class="space-y-2"
       >

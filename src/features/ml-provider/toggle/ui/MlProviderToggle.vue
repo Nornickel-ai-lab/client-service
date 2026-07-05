@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 
 import { useMlProviderStore } from '@/entities/ml/model/mlProviderStore';
@@ -8,22 +8,12 @@ import { Label } from '@/shared/ui/label';
 import { Switch } from '@/shared/ui/switch';
 
 const store = useMlProviderStore();
-const { isLocal, ollamaAvailable, gigachatAvailable, loaded } = storeToRefs(store);
-
-const switchDisabled = computed(() => {
-  if (isLocal.value) {
-    return !gigachatAvailable.value;
-  }
-  return !ollamaAvailable.value;
-});
+const { loaded } = storeToRefs(store);
 
 onMounted(async () => {
   await store.loadProviders();
+  store.setProvider('gigachat');
 });
-
-const onToggle = (value: boolean): void => {
-  store.toggleLocal(value);
-};
 </script>
 
 <template>
@@ -35,13 +25,12 @@ const onToggle = (value: boolean): void => {
       for="ml-provider-toggle"
       class="text-xs text-muted-foreground"
     >
-      {{ isLocal ? ui.mlProviderLocal : ui.mlProviderGigachat }}
+      {{ ui.mlProviderGigachat }}
     </Label>
     <Switch
       id="ml-provider-toggle"
-      :model-value="isLocal"
-      :disabled="switchDisabled"
-      @update:model-value="onToggle"
+      :model-value="false"
+      disabled
     />
   </div>
 </template>

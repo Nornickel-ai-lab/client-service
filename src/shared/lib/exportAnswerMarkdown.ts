@@ -13,29 +13,6 @@ export const buildAnswerMarkdown = (response: QueryResponse, queryText: string):
     '',
   ];
 
-  if (response.groups.length > 0) {
-    lines.push('## Группы источников', '');
-    for (const group of response.groups) {
-      lines.push(`### ${group.title}`, '', group.summary, '');
-      const entries = group.entries?.length
-        ? group.entries
-        : group.source_titles.map((title) => ({
-            title,
-            document_id: null,
-            excerpt: '',
-            page_label: null,
-          }));
-      for (const entry of entries) {
-        const page = entry.page_label ? ` — ${entry.page_label}` : '';
-        lines.push(`- **${entry.title}**${page}`);
-        if (entry.excerpt) {
-          lines.push(`  > ${entry.excerpt}`);
-        }
-      }
-      lines.push('');
-    }
-  }
-
   if (response.gaps.length > 0) {
     lines.push('## Пробелы в знаниях', '');
     for (const gap of response.gaps) {

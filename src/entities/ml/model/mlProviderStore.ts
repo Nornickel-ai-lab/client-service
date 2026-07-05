@@ -68,22 +68,12 @@ export const useMlProviderStore = defineStore('mlProvider', () => {
       const response = await fetchMlProviders();
       options.value = response.providers;
       loaded.value = true;
-      const defaultProvider = response.default === 'cloud' ? 'gigachat' : response.default;
-      if (!localStorage.getItem(STORAGE_KEY) && (defaultProvider === 'gigachat' || defaultProvider === 'ollama')) {
-        provider.value = defaultProvider;
-      }
-      if (provider.value === 'ollama' && !ollamaAvailable.value && gigachatAvailable.value) {
-        setProvider('gigachat');
-      }
-      if (provider.value === 'gigachat' && !gigachatAvailable.value && ollamaAvailable.value) {
-        setProvider('ollama');
-      }
+      provider.value = 'gigachat';
+      localStorage.setItem(STORAGE_KEY, 'gigachat');
     } catch {
       loaded.value = true;
-      if (provider.value === 'gigachat') {
-        provider.value = 'ollama';
-        localStorage.setItem(STORAGE_KEY, 'ollama');
-      }
+      provider.value = 'gigachat';
+      localStorage.setItem(STORAGE_KEY, 'gigachat');
     }
   };
 
