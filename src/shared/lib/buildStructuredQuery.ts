@@ -56,6 +56,32 @@ export const buildStructuredQuery = (input: QueryConstructorInput): string => {
   return lines.join('\n');
 };
 
+export const buildConstructorFallbackQuestion = (input: QueryConstructorInput): string => {
+  const parts = [
+    input.material.trim(),
+    input.process.trim(),
+    input.conditions.trim(),
+  ].filter(Boolean);
+  if (parts.length === 0) {
+    return ui.queryConstructorQuestion;
+  }
+  return `${parts.join('. ')}. ${ui.queryConstructorQuestion}`;
+};
+
+export const buildSearchQueryText = (
+  userText: string,
+  constructor: QueryConstructorInput,
+): string => {
+  const trimmed = userText.trim();
+  if (trimmed) {
+    return trimmed;
+  }
+  if (hasConstructorInput(constructor)) {
+    return buildConstructorFallbackQuestion(constructor);
+  }
+  return '';
+};
+
 export const hasConstructorInput = (input: QueryConstructorInput): boolean => {
   return Boolean(
     input.material.trim()

@@ -5,6 +5,20 @@ import { ui } from '@/shared/config/ui';
 <template>
   <div class="graph-legend">
     <div class="graph-legend__item">
+      <span
+        class="graph-legend__entity-dot"
+        aria-hidden="true"
+      />
+      <span>{{ ui.graphLegendEntity }}</span>
+    </div>
+    <div class="graph-legend__item">
+      <span
+        class="graph-legend__document-card"
+        aria-hidden="true"
+      />
+      <span>{{ ui.graphLegendDocument }}</span>
+    </div>
+    <div class="graph-legend__item">
       <svg
         class="graph-legend__line"
         width="36"
@@ -55,6 +69,25 @@ import { ui } from '@/shared/config/ui';
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.graph-legend__entity-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--muted);
+  flex-shrink: 0;
+}
+
+.graph-legend__document-card {
+  width: 28px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+  flex-shrink: 0;
 }
 
 .graph-legend__link {

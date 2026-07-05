@@ -2,7 +2,6 @@
 import { useSubmitQuery } from '@/features/search/submit-query/model/useSubmitQuery';
 import AnswerCard from '@/widgets/answer-card/ui/AnswerCard.vue';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { ui } from '@/shared/config/ui';
 
 const { messages, retry } = useSubmitQuery();
 
@@ -22,7 +21,7 @@ const onRetry = (id: string): void => {
       </div>
 
       <template
-        v-for="message in messages"
+        v-for="(message, index) in messages"
         :key="message.id"
       >
         <div
@@ -36,6 +35,7 @@ const onRetry = (id: string): void => {
         <AnswerCard
           v-else
           :message="message"
+          :query-text="messages[index - 1]?.role === 'user' ? messages[index - 1]?.text : ''"
           @retry="onRetry"
         />
       </template>

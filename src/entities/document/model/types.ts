@@ -13,7 +13,16 @@ export interface DocumentListResponse {
   items: DocumentItem[];
 }
 
+export interface UploadBatchInfo {
+  source: string;
+  queued: number;
+  skipped: number;
+  document_ids: string[];
+  skip_notes: string[];
+}
+
 export interface DocumentUploadResponse {
   id: string;
   status: string;
+  batch?: UploadBatchInfo | null;
 }

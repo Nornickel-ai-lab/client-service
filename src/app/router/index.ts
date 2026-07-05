@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import { useUserStore } from '@/entities/user/model/userStore';
 import AuthCallbackPage from '@/pages/auth-callback/ui/AuthCallbackPage.vue';
+import DashboardPage from '@/pages/dashboard/ui/DashboardPage.vue';
 import DocumentPage from '@/pages/documents/ui/DocumentPage.vue';
 import DocumentsListPage from '@/pages/documents/ui/DocumentsListPage.vue';
 import GraphPage from '@/pages/graph/ui/GraphPage.vue';
@@ -37,6 +38,10 @@ export const router = createRouter({
     {
       path: '/graph',
       component: GraphPage,
+    },
+    {
+      path: '/dashboard',
+      component: DashboardPage,
     },
     {
       path: '/documents',

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
-import { FileText, FileUp, GitGraph, LogOut, Search } from 'lucide-vue-next';
+import { BarChart3, FileText, FileUp, GitGraph, LogOut, Search } from 'lucide-vue-next';
 import { RouterLink, useRoute } from 'vue-router';
 
 import ThemeToggle from '@/features/theme/toggle/ui/ThemeToggle.vue';
@@ -66,6 +66,14 @@ const onLogout = (): void => {
       >
         <FileText class="size-4" />
         {{ ui.navDocuments }}
+      </RouterLink>
+      <RouterLink
+        to="/dashboard"
+        class="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
+        :class="isActive('/dashboard') ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'hover:bg-sidebar-accent/70'"
+      >
+        <BarChart3 class="size-4" />
+        {{ ui.navDashboard }}
       </RouterLink>
       <RouterLink
         to="/graph"

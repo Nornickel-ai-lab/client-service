@@ -6,11 +6,22 @@ import { Badge } from '@/shared/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Separator } from '@/shared/ui/separator';
 import { ui } from '@/shared/config/ui';
+import { formatGeoLabel } from '@/shared/lib/formatDomainLabels';
 
-const props = defineProps<{
+defineProps<{
   sources: SourceItem[];
   confidence: number;
 }>();
+
+const documentLink = (source: SourceItem): string | { path: string; query?: { page: string } } => {
+  if (source.page_num) {
+    return {
+      path: `/documents/${source.document_id}`,
+      query: { page: String(source.page_num) },
+    };
+  }
+  return `/documents/${source.document_id}`;
+};
 </script>
 
 <template>
@@ -37,7 +48,7 @@ const props = defineProps<{
           <div class="flex items-start justify-between gap-2">
             <CardTitle class="text-sm font-medium leading-snug">
               <RouterLink
-                :to="`/documents/${source.document_id}`"
+                :to="documentLink(source)"
                 class="hover:underline"
               >
                 {{ source.title }}
@@ -47,16 +58,27 @@ const props = defineProps<{
               {{ Math.round(source.confidence * 100) }}%
             </Badge>
           </div>
+          <div
+            v-if="source.page_label"
+            class="mt-2 flex items-center gap-2"
+          >
+            <span class="text-xs text-muted-foreground">
+              {{ ui.sourceLookAt }}
+            </span>
+            <Badge variant="outline">
+              {{ source.page_label }}
+            </Badge>
+          </div>
         </CardHeader>
         <CardContent class="space-y-3 pt-0">
-          <p class="line-clamp-4 text-sm text-muted-foreground">
+          <blockquote class="border-l-2 border-primary/30 pl-3 text-sm leading-relaxed text-muted-foreground">
             {{ source.chunk_text }}
-          </p>
+          </blockquote>
           <div
             v-if="source.geo || source.year"
             class="flex gap-2 text-xs text-muted-foreground"
           >
-            <span v-if="source.geo">{{ source.geo }}</span>
+            <span v-if="source.geo">{{ formatGeoLabel(source.geo) }}</span>
             <Separator
               v-if="source.geo && source.year"
               orientation="vertical"
@@ -65,10 +87,10 @@ const props = defineProps<{
             <span v-if="source.year">{{ source.year }}</span>
           </div>
           <RouterLink
-            :to="`/documents/${source.document_id}`"
+            :to="documentLink(source)"
             class="text-sm text-primary underline-offset-4 hover:underline"
           >
-            {{ ui.sourceOpen }}
+            {{ source.page_num ? ui.sourceOpenAtPage : ui.sourceOpen }}
           </RouterLink>
         </CardContent>
       </Card>

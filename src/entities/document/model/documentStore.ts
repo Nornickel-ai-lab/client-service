@@ -5,8 +5,9 @@ import {
   fetchDocument,
   fetchDocuments,
   uploadDocument,
+  uploadDocumentBatch,
 } from '@/entities/document/api/documentApi';
-import type { DocumentItem } from '@/entities/document/model/types';
+import type { DocumentItem, DocumentUploadResponse } from '@/entities/document/model/types';
 import type { MlProviderId } from '@/entities/ml/model/types';
 import { parseApiError } from '@/shared/api/errorHandler';
 
@@ -43,17 +44,36 @@ export const useDocumentStore = defineStore('document', () => {
     }
   };
 
-  const upload = async (file: File, mlProvider: MlProviderId): Promise<boolean> => {
+  const afterUpload = async (): Promise<void> => {
+    await loadDocuments();
+    startPolling();
+  };
+
+  const upload = async (file: File, mlProvider: MlProviderId): Promise<DocumentUploadResponse | null> => {
     uploadStatus.value = 'process';
     uploadError.value = null;
     try {
-      await uploadDocument(file, mlProvider);
-      await loadDocuments();
-      startPolling();
-      return true;
+      const response = await uploadDocument(file, mlProvider);
+      await afterUpload();
+      return response;
     } catch (error) {
       uploadError.value = parseApiError(error);
-      return false;
+      return null;
+    } finally {
+      uploadStatus.value = 'idle';
+    }
+  };
+
+  const uploadBatch = async (files: File[], mlProvider: MlProviderId): Promise<DocumentUploadResponse | null> => {
+    uploadStatus.value = 'process';
+    uploadError.value = null;
+    try {
+      const response = await uploadDocumentBatch(files, mlProvider);
+      await afterUpload();
+      return response;
+    } catch (error) {
+      uploadError.value = parseApiError(error);
+      return null;
     } finally {
       uploadStatus.value = 'idle';
     }
@@ -87,6 +107,7 @@ export const useDocumentStore = defineStore('document', () => {
     loadDocuments,
     loadDocument,
     upload,
+    uploadBatch,
     startPolling,
     stopPolling,
   };

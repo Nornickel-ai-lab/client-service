@@ -19,3 +19,10 @@ export const startSeedMaterials = async (mlProvider: MlProviderId): Promise<MlBu
   });
   return data;
 };
+
+export const startBulkIngest = async (mlProvider: MlProviderId): Promise<MlBulkJobResponse> => {
+  const { data } = await apiClient.post<MlBulkJobResponse>('/ml/bulk-ingest', {
+    ml_provider: mlProvider,
+  });
+  return data;
+};

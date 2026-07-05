@@ -9,29 +9,29 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
 } from '@/shared/ui/form';
 import { Textarea } from '@/shared/ui/textarea';
 import { ui } from '@/shared/config/ui';
 
 const { inputStatus, submit } = useSubmitQuery();
 
-const { handleSubmit, resetForm } = useForm({
+const { resetForm, values } = useForm({
   validationSchema: toTypedSchema(searchSchema),
   initialValues: {
     text: '',
   },
 });
 
-const onSubmit = handleSubmit(async (values) => {
+const onFormSubmit = async (event: Event): Promise<void> => {
+  event.preventDefault();
   await submit(values.text);
   resetForm();
-});
+};
 
 const onKeydown = (event: KeyboardEvent): void => {
   if (event.key === 'Enter' && !event.shiftKey) {
     event.preventDefault();
-    onSubmit();
+    void onFormSubmit(event);
   }
 };
 </script>
@@ -39,7 +39,7 @@ const onKeydown = (event: KeyboardEvent): void => {
 <template>
   <form
     class="sticky bottom-0 flex gap-2 border-t border-border bg-background/95 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/80"
-    @submit="onSubmit"
+    @submit="onFormSubmit"
   >
     <FormField
       v-slot="{ componentField }"
@@ -57,7 +57,6 @@ const onKeydown = (event: KeyboardEvent): void => {
             @keydown="onKeydown"
           />
         </FormControl>
-        <FormMessage />
       </FormItem>
     </FormField>
     <Button

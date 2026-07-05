@@ -1,53 +1,110 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Upload } from 'lucide-vue-next';
+import { FolderOpen, Upload } from 'lucide-vue-next';
 
 import { useUploadDocument } from '@/features/upload/document/model/useUploadDocument';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent } from '@/shared/ui/card';
 import { ui } from '@/shared/config/ui';
 
-const { uploadStatus, uploadError, fileError, setFile, submit } = useUploadDocument();
+const {
+  uploadStatus,
+  uploadError,
+  fileError,
+  setFile,
+  setDirectoryFiles,
+  selectionLabel,
+  submit,
+  resetSelection,
+} = useUploadDocument();
+
 const fileInputRef = ref<HTMLInputElement | null>(null);
-const selectedName = ref('');
+const directoryInputRef = ref<HTMLInputElement | null>(null);
 const uploadSuccess = ref(false);
+const uploadSuccessText = ref('');
 
 const onPickFile = (): void => {
   fileInputRef.value?.click();
 };
 
+const onPickDirectory = (): void => {
+  directoryInputRef.value?.click();
+};
+
+const clearInputs = (): void => {
+  if (fileInputRef.value) {
+    fileInputRef.value.value = '';
+  }
+  if (directoryInputRef.value) {
+    directoryInputRef.value.value = '';
+  }
+};
+
 const onFileChange = (event: Event): void => {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0] ?? null;
-  selectedName.value = file?.name ?? '';
   setFile(file);
   uploadSuccess.value = false;
+  uploadSuccessText.value = '';
+};
+
+const onDirectoryChange = (event: Event): void => {
+  const target = event.target as HTMLInputElement;
+  if (!target.files) {
+    return;
+  }
+  setDirectoryFiles(target.files);
+  uploadSuccess.value = false;
+  uploadSuccessText.value = '';
 };
 
 const onDrop = (event: DragEvent): void => {
   event.preventDefault();
+  const items = event.dataTransfer?.items;
+  if (items && items.length > 0) {
+    const fileList: File[] = [];
+    Array.from(items).forEach((item) => {
+      const entry = item.webkitGetAsEntry?.();
+      if (entry?.isFile) {
+        const file = item.getAsFile();
+        if (file) {
+          fileList.push(file);
+        }
+      }
+    });
+    if (fileList.length > 1) {
+      setDirectoryFiles(fileList);
+      return;
+    }
+  }
   const file = event.dataTransfer?.files?.[0] ?? null;
-  selectedName.value = file?.name ?? '';
   setFile(file);
   uploadSuccess.value = false;
+  uploadSuccessText.value = '';
 };
 
 const onDragOver = (event: DragEvent): void => {
   event.preventDefault();
 };
 
+const buildSuccessText = (response: NonNullable<Awaited<ReturnType<typeof submit>>>): string => {
+  if (response.batch) {
+    const batch = response.batch;
+    return `${ui.uploadBatchSuccess}: ${batch.queued} (пропущено: ${batch.skipped})`;
+  }
+  return ui.uploadSuccess;
+};
+
 const onSubmit = async (event: Event): Promise<void> => {
   event.preventDefault();
-  const ok = await submit();
-  if (!ok) {
+  const response = await submit();
+  if (!response) {
     return;
   }
   uploadSuccess.value = true;
-  selectedName.value = '';
-  setFile(null);
-  if (fileInputRef.value) {
-    fileInputRef.value.value = '';
-  }
+  uploadSuccessText.value = buildSuccessText(response);
+  resetSelection();
+  clearInputs();
 };
 </script>
 
@@ -65,23 +122,54 @@ const onSubmit = async (event: Event): Promise<void> => {
           accept=".pdf,.docx,.pptx,.zip"
           @change="onFileChange"
         />
-        <button
-          type="button"
+        <input
+          ref="directoryInputRef"
+          type="file"
+          class="hidden"
+          webkitdirectory
+          directory
+          multiple
+          @change="onDirectoryChange"
+        />
+        <div
           class="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border bg-muted/20 px-6 py-10 transition-colors hover:bg-muted/40"
-          :disabled="uploadStatus === 'process'"
-          @click="onPickFile"
           @drop="onDrop"
           @dragover="onDragOver"
         >
           <Upload class="size-8 text-muted-foreground" />
-          <span class="text-sm font-medium">{{ ui.uploadAction }}</span>
-          <span class="text-xs text-muted-foreground">PDF · DOCX · PPTX · ZIP</span>
-        </button>
+          <p class="text-sm font-medium">
+            {{ ui.uploadDescription }}
+          </p>
+          <p class="text-center text-xs text-muted-foreground">
+            {{ ui.uploadFormatsHint }}
+          </p>
+          <div class="flex flex-wrap justify-center gap-2 pt-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              :disabled="uploadStatus === 'process'"
+              @click="onPickFile"
+            >
+              {{ ui.uploadAction }}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              :disabled="uploadStatus === 'process'"
+              @click="onPickDirectory"
+            >
+              <FolderOpen class="size-4" />
+              {{ ui.uploadDirectoryAction }}
+            </Button>
+          </div>
+        </div>
         <p
-          v-if="selectedName"
+          v-if="selectionLabel()"
           class="text-sm text-muted-foreground"
         >
-          {{ selectedName }}
+          {{ selectionLabel() }}
         </p>
         <p
           v-if="fileError"
@@ -93,7 +181,7 @@ const onSubmit = async (event: Event): Promise<void> => {
           v-if="uploadSuccess"
           class="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm"
         >
-          {{ ui.uploadSuccess }}
+          {{ uploadSuccessText }}
         </p>
         <p
           v-if="uploadError"

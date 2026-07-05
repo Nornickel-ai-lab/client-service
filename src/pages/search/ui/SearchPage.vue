@@ -15,7 +15,7 @@ import { ui } from '@/shared/config/ui';
         </h1>
       
       </header>
-      <div class="border-b border-border bg-muted/20 px-6 py-4">
+      <div class="border-b border-border bg-muted/20">
         <FilterPanel />
       </div>
       <SearchThread />

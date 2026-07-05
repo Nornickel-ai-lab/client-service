@@ -16,11 +16,26 @@ const document = ref<DocumentItem | null>(null);
 const loadError = ref<string | null>(null);
 const loading = ref(false);
 
+const isPdf = (item: DocumentItem | null = document.value): boolean => {
+  return item?.filename.toLowerCase().endsWith('.pdf') ?? false;
+};
+
+const pageFromQuery = computed(() => {
+  const raw = route.query.page;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : null;
+});
+
 const fileViewUrl = computed(() => {
   if (!document.value) {
     return null;
   }
-  return buildDocumentFileUrl(document.value.id);
+  const base = buildDocumentFileUrl(document.value.id);
+  if (!base || !pageFromQuery.value || !isPdf(document.value)) {
+    return base;
+  }
+  return `${base}#page=${pageFromQuery.value}`;
 });
 
 const load = async (): Promise<void> => {
@@ -54,10 +69,6 @@ watch(
   },
   { immediate: true },
 );
-
-const isPdf = (): boolean => {
-  return document.value?.filename.toLowerCase().endsWith('.pdf') ?? false;
-};
 </script>
 
 <template>
@@ -94,6 +105,7 @@ const isPdf = (): boolean => {
             </h1>
             <p class="text-sm text-muted-foreground">
               {{ document.filename }}
+              <span v-if="pageFromQuery"> · {{ ui.sourceLookAt }} {{ ui.sourcePage }} {{ pageFromQuery }}</span>
             </p>
           </div>
           <Button
@@ -110,7 +122,7 @@ const isPdf = (): boolean => {
         </div>
         <iframe
           v-if="fileViewUrl && isPdf()"
-          :key="fileViewUrl"
+          :key="`${fileViewUrl}-${pageFromQuery ?? 0}`"
           :src="fileViewUrl"
           class="min-h-[75vh] w-full rounded-lg border border-border bg-background"
           :title="document.title"

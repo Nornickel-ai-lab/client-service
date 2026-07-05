@@ -43,6 +43,24 @@ export const uploadDocument = async (
   return data;
 };
 
+export const uploadDocumentBatch = async (
+  files: File[],
+  mlProvider: MlProviderId,
+): Promise<DocumentUploadResponse> => {
+  const form = new FormData();
+  files.forEach((file) => {
+    const relativePath = file.webkitRelativePath || file.name;
+    form.append('files', file, relativePath);
+  });
+  form.append('ml_provider', mlProvider);
+  const { data } = await apiClient.post<DocumentUploadResponse>('/documents/upload-batch', form, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return data;
+};
+
 export const fetchDocumentBlob = async (
   documentId: string,
   signal?: AbortSignal,

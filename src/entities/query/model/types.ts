@@ -4,6 +4,11 @@ export interface PerformanceMetrics {
   total_time_ms: number;
   search_time_ms: number;
   llm_time_ms: number;
+  parse_time_ms?: number;
+  embed_time_ms?: number;
+  es_time_ms?: number;
+  rerank_time_ms?: number;
+  synth_time_ms?: number;
 }
 
 export interface SourceItem {
@@ -13,7 +18,28 @@ export interface SourceItem {
   confidence: number;
   geo: string | null;
   year: number | null;
+  page_num: number | null;
+  page_label: string | null;
   document_url: string;
+}
+
+export interface SourceGroupEntry {
+  title: string;
+  document_id: string | null;
+  excerpt: string;
+  page_label: string | null;
+}
+
+export interface SourceGroupItem {
+  title: string;
+  summary: string;
+  source_titles: string[];
+  entries: SourceGroupEntry[];
+}
+
+export interface ExpertFacilityItem {
+  experts: string[];
+  facilities: string[];
 }
 
 export interface ContradictionItem {
@@ -31,6 +57,10 @@ export interface QueryResponse {
   confidence: number;
   sources: SourceItem[];
   contradictions: ContradictionItem[];
+  groups: SourceGroupItem[];
+  gaps: string[];
+  recommendations: string[];
+  related: ExpertFacilityItem;
   ml_provider: string;
   performance: PerformanceMetrics;
 }

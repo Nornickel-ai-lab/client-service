@@ -7,7 +7,7 @@ import type { QueryMessage } from '@/entities/query/model/types';
 interface SubmitQueryResult {
   messages: Ref<QueryMessage[]>;
   inputStatus: Ref<'idle' | 'process'>;
-  submit: (text: string) => Promise<void>;
+  submit: (text: string, options?: { applyConstructor?: boolean; clearConstructorAfter?: boolean }) => Promise<void>;
   retry: (assistantId: string) => Promise<void>;
 }
 
